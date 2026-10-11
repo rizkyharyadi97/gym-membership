@@ -67,6 +67,9 @@ CREATE TABLE transactions (
     total_amount NUMERIC(12, 2) NOT NULL,
     deposit_payment NUMERIC(12, 2) NOT NULL DEFAULT 0,
     status VARCHAR(255) NOT NULL DEFAULT 'pending',
+    payment_order_id VARCHAR(64) UNIQUE,
+    payment_token VARCHAR(255),
+    payment_url TEXT,
     transaction_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -117,3 +120,20 @@ CREATE TABLE bookings (
     CONSTRAINT bookings_user_class_unique
         UNIQUE (user_id, gym_class_id)
 );
+
+CREATE INDEX idx_transactions_user_id ON transactions (user_id);
+
+CREATE INDEX idx_transactions_membership_id ON transactions (membership_id);
+
+CREATE INDEX idx_transactions_status ON transactions (status);
+
+CREATE INDEX idx_bookings_user_id ON bookings (user_id);
+
+CREATE INDEX idx_bookings_class_id ON bookings (gym_class_id);
+
+CREATE INDEX idx_bookings_status ON bookings (status);
+
+CREATE UNIQUE INDEX bookings_active_user_class_unique ON bookings (user_id, gym_class_id)
+    WHERE status = 'booked';
+
+CREATE INDEX idx_gym_classes_schedule ON gym_classes (schedule);
